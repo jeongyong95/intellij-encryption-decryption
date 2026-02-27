@@ -9,7 +9,9 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.jeongyong95.intellijencryptiondecryption.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.jeongyong95.intellijencryptiondecryption.startup.MyProjectActivity" />
+        <toolWindow factoryClass="com.github.jeongyong95.intellijencryptiondecryption.toolWindow.CryptoToolWindowFactory"
+                    id="Crypto"
+                    anchor="right"
+                    icon="AllIcons.Nodes.SecurityRole"/>
     </extensions>
 </idea-plugin>

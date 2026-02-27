@@ -4,49 +4,77 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Adjust the [pluginGroup](./gradle.properties) and [pluginName](./gradle.properties), as well as the [id](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the `MARKETPLACE_ID` in the above README badges. You can obtain it once the plugin is published to JetBrains Marketplace.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
-- [ ] Configure the [CODECOV_TOKEN](https://docs.codecov.com/docs/quick-start) secret for automated test coverage reports on PRs
-
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+IntelliJ IDE에서 문자열 암호화/복호화, 해시 생성, Base64 인코딩/디코딩을 수행할 수 있는 Tool Window 플러그인입니다.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+외부 도구 없이 IDE 내에서 바로 암호화 작업을 처리할 수 있습니다.
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
+### 주요 기능
+
+- **암호화/복호화** - AES (128/192/256, CBC/GCM), DES, 3DES 지원
+- **해시 생성** - MD5, SHA-1, SHA-256, SHA-512 지원
+- **Base64** - 인코딩/디코딩 지원
 <!-- Plugin description end -->
 
-## Installation
+## 상세 기능
 
-- Using the IDE built-in plugin system:
+### 암호화/복호화
+
+| 알고리즘 | 키 크기 | 모드 |
+|---------|--------|------|
+| AES-128 CBC | 128bit | CBC/PKCS5Padding |
+| AES-192 CBC | 192bit | CBC/PKCS5Padding |
+| AES-256 CBC | 256bit | CBC/PKCS5Padding |
+| AES-128 GCM | 128bit | GCM/NoPadding |
+| AES-192 GCM | 192bit | GCM/NoPadding |
+| AES-256 GCM | 256bit | GCM/NoPadding |
+| DES CBC | 64bit | CBC/PKCS5Padding |
+| 3DES CBC | 192bit | CBC/PKCS5Padding |
+
+- 비밀번호 기반 키 파생: PBKDF2WithHmacSHA256 (65,536 iterations)
+- 출력 포맷: `Base64(salt + iv + ciphertext)` (self-contained)
+- 매번 랜덤 Salt/IV를 생성하여 동일한 입력이라도 다른 암호문 출력
+
+### 해시 생성
+
+MD5, SHA-1, SHA-256, SHA-512 알고리즘을 지원하며, 결과는 Hex 문자열로 출력됩니다.
+
+### Base64
+
+UTF-8 문자열의 Base64 인코딩/디코딩을 지원합니다.
+
+## 사용 방법
+
+1. IDE 우측 Tool Window 바에서 **Crypto** 탭을 클릭합니다.
+2. 암호화/복호화, 해시, Base64 탭 중 원하는 기능을 선택합니다.
+3. 입력값을 입력하고 버튼을 클릭하면 결과가 출력됩니다.
+4. **복사** 버튼으로 결과를 클립보드에 복사할 수 있습니다.
+
+## 설치
+
+- IDE 내장 플러그인 시스템:
 
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "intellij-encryption-decryption"</kbd> >
   <kbd>Install</kbd>
 
-- Using JetBrains Marketplace:
+- 수동 설치:
 
-  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
-
-  You can also download the [latest release](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID/versions) from JetBrains Marketplace and install it manually using
+  [최신 릴리스](https://github.com/jeongyong95/intellij-encryption-decryption/releases/latest)를 다운로드한 후
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
-- Manually:
+## 요구 사항
 
-  Download the [latest release](https://github.com/jeongyong95/intellij-encryption-decryption/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+- IntelliJ IDEA 2025.2.5 이상
+- JDK 21 이상
 
+## 기술 스택
+
+- Kotlin
+- IntelliJ Platform SDK
+- JDK 내장 `javax.crypto` (추가 의존성 없음)
+- Swing + JetBrains UI 컴포넌트
 
 ---
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 
 [template]: https://github.com/JetBrains/intellij-platform-plugin-template
-[docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/plugin-user-experience.html#plugin-description-and-presentation
